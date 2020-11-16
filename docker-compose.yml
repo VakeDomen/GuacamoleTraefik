@@ -5,8 +5,22 @@ services:
     container_name: guacamole
     volumes:
       - ./postgres:/config
-    ports:
-      - 8080:8080
+    networks:
+      - proxy
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.guacamole.rule=Host(`${DOMAIN}`)
+      - traefik.http.routers.guacamole.entrypoints=websecure
+      - traefik.http.routers.guacamole.tls=true
+      - traefik.http.routers.guacamole.tls.certresolver=le
+      - traefik.http.services.guacamole.loadbalancer.server.port=8080 
+
 volumes:
   postgres:
     driver: local
+
+networks:
+  proxy:
+    external: true
+
+
